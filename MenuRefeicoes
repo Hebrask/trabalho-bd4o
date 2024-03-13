@@ -1,0 +1,146 @@
+import com.db4o.Db4oEmbedded;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+
+import java.util.Scanner;
+
+public class MenuRefeicoes {
+
+    public static void main(String[] args) {
+        // Configurando o banco de dados
+        ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "menuRefeicoes.db4o");
+
+        // Exibindo o menu principal
+        while (true) {
+            System.out.println("1. Adicionar Refeição");
+            System.out.println("2. Exibir Menu");
+            System.out.println("3. Selecionar Refeição");
+            System.out.println("4. Atualizar Refeição");
+            System.out.println("5. Excluir Refeição");
+            System.out.println("6. Sair");
+
+            Scanner scanner = new Scanner(System.in);
+            int escolha = scanner.nextInt();
+
+            switch (escolha) {
+                case 1:
+                    adicionarRefeicao(db);
+                    break;
+                case 2:
+                    exibirMenu(db);
+                    break;
+                case 3:
+                    selecionarRefeicao(db);
+                    break;
+                case 4:
+                    atualizarRefeicao(db);
+                    break;
+                case 5:
+                    excluirRefeicao(db);
+                    break;
+                case 6:
+                    // Fechando o banco de dados e encerrando o programa
+                    db.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Escolha inválida. Tente novamente.");
+            }
+        }
+    }
+
+    private static void adicionarRefeicao(ObjectContainer db) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Digite o nome da refeição:");
+        String nomeRefeicao = scanner.nextLine();
+
+        System.out.println("Digite a descrição da refeição:");
+        String descricaoRefeicao = scanner.nextLine();
+
+        Refeicao refeicao = new Refeicao(nomeRefeicao, descricaoRefeicao);
+
+        // Salvando a refeição no banco de dados
+        db.store(refeicao);
+        System.out.println("Refeição adicionada com sucesso!");
+    }
+
+    private static void exibirMenu(ObjectContainer db) {
+        // Consultando todas as refeições no banco de dados
+        ObjectSet<Refeicao> refeicoes = db.queryByExample(Refeicao.class);
+
+        if (refeicoes.isEmpty()) {
+            System.out.println("Nenhuma refeição cadastrada ainda.");
+        } else {
+            System.out.println("Menu de Refeições:");
+
+            // Exibindo as refeições
+            for (Refeicao refeicao : refeicoes) {
+                System.out.println("Nome: " + refeicao.getNome());
+                System.out.println("Descrição: " + refeicao.getDescricao());
+                System.out.println("---------------------------");
+            }
+        }
+    }
+
+    private static void selecionarRefeicao(ObjectContainer db) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Digite o nome da refeição que deseja selecionar:");
+        String nomeRefeicao = scanner.nextLine();
+
+        Refeicao exemplo = new Refeicao(nomeRefeicao, null);
+        ObjectSet<Refeicao> result = db.queryByExample(exemplo);
+
+        if (!result.isEmpty()) {
+            System.out.println("Refeição encontrada:");
+            for (Refeicao refeicao : result) {
+                System.out.println("Nome: " + refeicao.getNome());
+                System.out.println("Descrição: " + refeicao.getDescricao());
+                System.out.println("---------------------------");
+            }
+        } else {
+            System.out.println("Refeição não encontrada.");
+        }
+    }
+
+    private static void atualizarRefeicao(ObjectContainer db) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Digite o nome da refeição que deseja atualizar:");
+        String nomeRefeicao = scanner.nextLine();
+
+        Refeicao exemplo = new Refeicao(nomeRefeicao, null);
+        ObjectSet<Refeicao> result = db.queryByExample(exemplo);
+
+        if (!result.isEmpty()) {
+            Refeicao refeicao = result.next();
+            System.out.println("Digite o novo nome da refeição:");
+            refeicao.setNome(scanner.nextLine());
+            System.out.println("Digite a nova descrição da refeição:");
+            refeicao.setDescricao(scanner.nextLine());
+            db.store(refeicao);
+            System.out.println("Refeição atualizada com sucesso!");
+        } else {
+            System.out.println("Refeição não encontrada.");
+        }
+    }
+
+    private static void excluirRefeicao(ObjectContainer db) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Digite o nome da refeição que deseja excluir:");
+        String nomeRefeicao = scanner.nextLine();
+
+        Refeicao exemplo = new Refeicao(nomeRefeicao, null);
+        ObjectSet<Refeicao> result = db.queryByExample(exemplo);
+
+        if (!result.isEmpty()) {
+            Refeicao refeicao = result.next();
+            db.delete(refeicao);
+            System.out.println("Refeição excluída com sucesso!");
+        } else {
+            System.out.println("Refeição não encontrada.");
+        }
+    }
+}
