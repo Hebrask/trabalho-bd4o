@@ -7,10 +7,10 @@ import java.util.Scanner;
 public class MenuRefeicoes {
 
     public static void main(String[] args) {
-        // Configurando o banco de dados
+    
         ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "menuRefeicoes.db4o");
 
-        // Exibindo o menu principal
+    
         while (true) {
             System.out.println("1. Adicionar Refeição");
             System.out.println("2. Exibir Menu");
@@ -39,7 +39,7 @@ public class MenuRefeicoes {
                     excluirRefeicao(db);
                     break;
                 case 6:
-                    // Fechando o banco de dados e encerrando o programa
+            
                     db.close();
                     System.exit(0);
                     break;
@@ -60,13 +60,13 @@ public class MenuRefeicoes {
 
         Refeicao refeicao = new Refeicao(nomeRefeicao, descricaoRefeicao);
 
-        // Salvando a refeição no banco de dados
+    
         db.store(refeicao);
         System.out.println("Refeição adicionada com sucesso!");
     }
 
     private static void exibirMenu(ObjectContainer db) {
-        // Consultando todas as refeições no banco de dados
+        
         ObjectSet<Refeicao> refeicoes = db.queryByExample(Refeicao.class);
 
         if (refeicoes.isEmpty()) {
@@ -74,7 +74,7 @@ public class MenuRefeicoes {
         } else {
             System.out.println("Menu de Refeições:");
 
-            // Exibindo as refeições
+        
             for (Refeicao refeicao : refeicoes) {
                 System.out.println("Nome: " + refeicao.getNome());
                 System.out.println("Descrição: " + refeicao.getDescricao());
